@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Filter Editor</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #editor-container {
+      text-align: center;
+    }
+
+    #image-upload {
+      margin-bottom: 20px;
+    }
+
+    .slider-container {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="editor-container">
+    <input type="file" id="image-upload" accept="image/*">
+    <div class="slider-container">
+        <label for="brightness">Brightness:</label>
+        <input type="range" id="brightness" min="-50" max="50" step="1" value="0" />
+        <span id="brightness-value">0</span>
+      </div>
+    <div class="slider-container">
+        <label for="contrast">Contrast:</label>
+        <input type="range" id="contrast" min="-50" max="50" step="1" value="0" />
+        <span id="contrast-value">0</span>
+      </div>
+      <div class="slider-container">
+        <label for="saturation">Saturation:</label>
+        <input type="range" id="saturation" min="-50" max="50" step="1" value="0" />
+        <span id="saturation-value">0</span>
+      </div>
+      <div class="slider-container">
+        <label for="sharpen">Sharpen:</label>
+        <input type="range" id="sharpen" min="0" max="10" step="0.1" value="0" />
+        <span id="sharpen-value">0</span>
+      </div>
+      <div class="slider-container">
+        <label for="vignette">Vignette:</label>
+        <input type="range" id="vignette" min="0" max="1" step="0.1" value="0" />
+        <span id="vignette-value">0</span>
+      </div>
+      <div class="slider-container">
+        <label for="fade">Fade:</label>
+        <input type="range" id="fade" min="0" max="1" step="0.1" value="0" />
+        <span id="fade-value">0</span>
+      </div>
+
+      
+      
+      
+    <!-- Add similar containers for other parameters (contrast, saturation, etc.) -->
+
+    <canvas id="image-canvas"></canvas>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/camanjs/4.1.2/caman.full.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const uploadInput = document.getElementById('image-upload');
+        const brightnessInput = document.getElementById('brightness');
+        const brightnessValue = document.getElementById('brightness-value');
+        const contrastInput = document.getElementById('contrast');
+        const contrastValue = document.getElementById('contrast-value');
+        const saturationInput = document.getElementById('saturation');
+        const saturationValue = document.getElementById('saturation-value');
+        const sharpenInput = document.getElementById('sharpen');
+        const sharpenValue = document.getElementById('sharpen-value');
+        const vignetteInput = document.getElementById('vignette');
+        const vignetteValue = document.getElementById('vignette-value');
+        const fadeInput = document.getElementById('fade');
+        const fadeValue = document.getElementById('fade-value');
+
+
+        const canvas = document.getElementById('image-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let currentImage = null;
+
+        // Handle image upload
+        uploadInput.addEventListener('change', handleImageUpload);
+
+        // Handle parameter changes
+        brightnessInput.addEventListener('input', applyFilters);
+        contrastInput.addEventListener('input', applyFilters);
+        saturationInput.addEventListener('input', applyFilters);
+        sharpenInput.addEventListener('input', applyFilters);
+        vignetteInput.addEventListener('input', applyFilters);
+        fadeInput.addEventListener('input', applyFilters);
+
+
+        function handleImageUpload(event) {
+          const file = event.target.files[0];
+
+          if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+              const img = new Image();
+              img.src = e.target.result;
+
+              img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                currentImage = img;
+                applyFilters();
+              };
+            };
+
+            reader.readAsDataURL(file);
+          }
+        }
+
+        function applyFilters() {
+          if (!currentImage) return;
+
+          Caman(canvas, function () {
+            this.revert(false);
+
+            // Apply filters based on the selected parameters
+            this.brightness(parseFloat(brightnessInput.value));
+            this.contrast(parseFloat(contrastInput.value));
+            this.saturation(parseFloat(saturationInput.value));
+            this.sharpen(parseFloat(sharpenInput.value));
+            this.vignette(parseFloat(vignetteInput.value));
+            this.fade(parseFloat(fadeInput.value));
+
+
+            // Add similar lines for other parameters (contrast, saturation, etc.)
+
+            // Render the changes
+            this.render(function () {
+              // Update the brightness value display
+              brightnessValue.textContent = brightnessInput.value;
+              contrastValue.textContent = contrastInput.value;
+              saturationValue.textContent = saturationInput.value;
+              sharpenValue.textContent = sharpenInput.value;
+              vignetteValue.textContent = vignetteInput.value;
+              fadeValue.textContent = fadeInput.value;
+            });
+          });
+        }
+      });
+    </script>
+  </div>
+</body>
+</html>
